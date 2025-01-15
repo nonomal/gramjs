@@ -179,7 +179,7 @@ export class DirectDownloadIter extends RequestIter {
     async _request(): Promise<Buffer> {
         try {
             this._sender = await this.client.getSender(this._sender!.dcId);
-            const result = await this.client.invoke(
+            const result = await this.client.invokeWithSender(
                 this.request!,
                 this._sender
             );
@@ -430,13 +430,13 @@ export async function downloadFileV2(
             msgData: msgData,
         })) {
             await writer.write(chunk);
+            downloaded = downloaded.add(chunk.length);
             if (progressCallback) {
                 await progressCallback(
                     downloaded,
                     bigInt(fileSize || bigInt.zero)
                 );
             }
-            downloaded = downloaded.add(chunk.length);
         }
         return returnWriterValue(writer);
     } finally {
